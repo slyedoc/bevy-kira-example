@@ -219,7 +219,9 @@ name = "bevy-kira-example"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_asset_loader",
  "bevy_kira_audio",
+ "pretty-type-name",
 ]
 
 [[package]]
@@ -260,6 +262,25 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
+]
+
+[[package]]
+name = "bevy_asset_loader"
+version = "0.2.0"
+source = "git+https://github.com/slyedoc/bevy_asset_loader?branch=bevy_main#4bd5ebfb4542a6c023ea3e0ac2f2b8d324dcc0eb"
+dependencies = [
+ "bevy",
+ "bevy_asset_loader_derive",
+]
+
+[[package]]
+name = "bevy_asset_loader_derive"
+version = "0.2.0"
+source = "git+https://github.com/slyedoc/bevy_asset_loader?branch=bevy_main#4bd5ebfb4542a6c023ea3e0ac2f2b8d324dcc0eb"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -2484,6 +2505,12 @@ name = "ppv-lite86"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
+
+[[package]]
+name = "pretty-type-name"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8815d101cfb4cb491154896bdab292a395a7ac9ab185a9941a2f5be0135900d"
 
 [[package]]
 name = "proc-macro-crate"

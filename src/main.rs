@@ -28,18 +28,18 @@ fn main() {
         .add_system_set(
             // Play Song on loop
             SystemSet::on_enter(MyState::First)
-                //.with_system(setup_bg.system()) //Works
-                .with_system(setup_bg_loader.system()) // Almost never works
+                //.with_system(setup_bg.system()) //Works every time
+                .with_system(setup_bg_loader.system()) // Fails sometimes
+
         )
         .add_system_set(
             // Play Audio every 3 seconds
-            SystemSet::new()
+            SystemSet::on_update(MyState::First)
                 .with_run_criteria(FixedTimestep::step(3.0))
-                //.with_system(play_fx1.system()) //Works
-                .with_system(play_fx1_loader.system()) // Never works, will panic if not in release mode too
-        );
-
-        app.add_system_set(
+                //.with_system(play_fx1.system()) //Works every time
+                .with_system(play_fx1_loader.system()) // Never works, will panic
+        ).add_system_set(
+            // Dipslay Loading Status while in loading state
             SystemSet::on_update(MyState::Loading)
             .with_system(display_loading_status::<Handle<AudioSource>, AudioAssets>.system())
         );
@@ -51,7 +51,7 @@ fn main() {
         app.run();
 }
 
-// AssetLoader is not going to menu, stuck in loading state
+// some debug info about AssetCollection
 #[allow(dead_code)]
 fn display_loading_status<T: Component + Debug + Clone + Eq + Hash, Assets: AssetCollection>(
     asset_server: Res<AssetServer>,
@@ -121,7 +121,7 @@ fn play_fx1_loader(
 ) {
     println!("loader fx1 sound!");
     audio.play_in_channel(
-        audio_asset.bounce.clone(),
+        audio_asset.bounce.clone(), // Fails
         &channels.fx1,
     );
 }

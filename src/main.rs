@@ -1,9 +1,9 @@
 use bevy::{core::FixedTimestep, ecs::component::Component, prelude::*};
 use bevy_asset_loader::*;
 use bevy_kira_audio::*;
+use pretty_type_name::pretty_type_name;
 use std::fmt::Debug;
 use std::hash::Hash;
-use pretty_type_name::pretty_type_name;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum MyState {
@@ -29,26 +29,26 @@ fn main() {
             // Play Song on loop
             SystemSet::on_enter(MyState::First)
                 //.with_system(setup_bg.system()) //Works every time
-                .with_system(setup_bg_loader.system()) // Fails sometimes
-
+                .with_system(setup_bg_loader.system()), // Fails with release sometimes, debug alot
         )
         .add_system_set(
             // Play Audio every 3 seconds
             SystemSet::on_update(MyState::First)
                 .with_run_criteria(FixedTimestep::step(3.0))
                 //.with_system(play_fx1.system()) //Works every time
-                .with_system(play_fx1_loader.system()) // Never works, will panic
-        ).add_system_set(
+                .with_system(play_fx1_loader.system()), // Never works, will panic
+        )
+        .add_system_set(
             // Dipslay Loading Status while in loading state
             SystemSet::on_update(MyState::Loading)
-            .with_system(display_loading_status::<Handle<AudioSource>, AudioAssets>.system())
+                .with_system(display_loading_status::<Handle<AudioSource>, AudioAssets>.system()),
         );
 
-        AssetLoader::new(MyState::Loading, MyState::First)
+    AssetLoader::new(MyState::Loading, MyState::First)
         .with_collection::<AudioAssets>()
         .build(&mut app);
 
-        app.run();
+    app.run();
 }
 
 // some debug info about AssetCollection
@@ -63,7 +63,6 @@ fn display_loading_status<T: Component + Debug + Clone + Eq + Hash, Assets: Asse
     }
 }
 
-
 #[derive(AssetCollection)]
 pub struct AudioAssets {
     #[asset(path = "bensound-creativeminds.wav")]
@@ -74,11 +73,7 @@ pub struct AudioAssets {
 }
 
 #[allow(dead_code)]
-fn setup_bg(
-    audio: Res<Audio>,
-    assets: Res<AssetServer>,
-    channels: Res<MyAudioChannels>,
-) {
+fn setup_bg(audio: Res<Audio>, assets: Res<AssetServer>, channels: Res<MyAudioChannels>) {
     println!("background sound!");
     audio.set_volume_in_channel(0.5, &channels.background);
     audio.play_looped_in_channel(
@@ -95,18 +90,11 @@ fn setup_bg_loader(
 ) {
     println!("loader background sound!");
     audio.set_volume_in_channel(0.5, &channels.background);
-    audio.play_looped_in_channel(
-        audio_asset.background_music.clone(),
-        &channels.background,
-    );
+    audio.play_looped_in_channel(audio_asset.background_music.clone(), &channels.background);
 }
 
 #[allow(dead_code)]
-fn play_fx1(
-    audio: Res<Audio>,
-    assets: Res<AssetServer>,
-    channels: Res<MyAudioChannels>,
-) {
+fn play_fx1(audio: Res<Audio>, assets: Res<AssetServer>, channels: Res<MyAudioChannels>) {
     println!("fx1 sound!");
     audio.play_in_channel(
         assets.load("bounce.wav"), // works
